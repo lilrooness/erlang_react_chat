@@ -18,8 +18,13 @@ websocket_init(_Type, Req, _Opts) ->
 
 websocket_handle({text, Username}, Req, #state{username=undefined} = State) ->
   io:format("New Connection from ~p~n", [Username]),
-  Response = chat_room:register_new_connection({Username, self()}),
-  {reply, {text, Response}, Req, State#state{username=Username}};
+  case chat_room:register_new_connection({Username, self()}) of
+    ok ->
+      {reply, {text, "Welcome " ++ Username}, Req, State#state{username=Username}};
+    {error, name_taken} ->
+      {reply, {text, "Username in use"}, Req, State}
+  end;
+
 
 websocket_handle({text, Message}, Req, State) ->
   chat_room:emit_message(Message),

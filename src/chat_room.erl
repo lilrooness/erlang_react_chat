@@ -33,9 +33,9 @@ handle_call({register, {NewName, _Pid} = Connection}, _From,
 
   case proplists:get_value(NewName, Connections) of
     undefined ->
-      {reply, "ok", State#state{connections=Connections ++ [Connection]}};
+      {reply, ok, State#state{connections=Connections ++ [Connection]}};
     _ ->
-      {reply, "name_taken", State}
+      {reply, {error, name_taken}, State}
   end;
 
 handle_call({unregister, Username}, _From,
