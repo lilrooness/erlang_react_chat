@@ -14,7 +14,8 @@
 
 -export([register_new_connection/1,
         unregister_connection/1,
-        emit_message/1]).
+        emit_message/1,
+        process_decoded_message/1]).
 
 % CALLBACK FUNCTIONS #####################################
 
@@ -55,9 +56,16 @@ terminate(_Reason, _State) ->
   ok.
 
 % API FUNCTIONS ##########################################
-
 register_new_connection(Connection) ->
   gen_server:call(?MODULE, {register, Connection}).
+
+process_decoded_message({message, Message}) ->
+  gen_server:cast(?MODULE,
+    {emit, ews_util:encode_message(Message, <<"message">>)});
+process_decoded_message({command, _Message}) ->
+  ok;
+process_decoded_message({_Type, _Message}) ->
+  ok.
 
 unregister_connection(Username) ->
   gen_server:call(?MODULE, {unregister, Username}).
