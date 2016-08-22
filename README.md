@@ -12,6 +12,9 @@ Build
 
     $ rebar3 compile
     $ cd priv/chat_client && npm build
+
+Run
+---
     $ ./erl.sh
 
     (CSS Flexbox only supported currently in Google Chrome)
