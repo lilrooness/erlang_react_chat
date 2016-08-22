@@ -35,7 +35,6 @@ class DisplayArea extends Component {
   }
 
   render() {
-    console.log(this.props.messages);
     return (
       <div className="DisplayArea">
         {this.props.messages.map((m, i) =>
@@ -62,8 +61,14 @@ class App extends Component {
     // this.onMessageChange = this.onMessageChange.bind(this);
     // this.sendMessage = this.sendMessage.bind(this);
 
+    this.state.socket.onopen = () => {
+      var username = prompt("Username", "");
+      this.state.socket.send(username);Joe
+    }
+
     this.state.socket.onmessage = (event) => {
-      this.messageReceived(event.data);
+      var data = JSON.parse(event.data);
+      this.messageReceived(data.message);
     };
   }
 
@@ -72,7 +77,11 @@ class App extends Component {
   }
 
   sendMessage() {
-    this.state.socket.send(this.state.message);
+    var data = {
+      type: "message",
+      message: this.state.message
+    };
+    this.state.socket.send(JSON.stringify(data));
   }
 
   messageReceived(message) {
