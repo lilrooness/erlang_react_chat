@@ -7,7 +7,7 @@ class Input extends Component {
     return (
       <div className="Input">
         <input type="text" className="inputBox"
-               onChange={this.props.changefun} />
+               onChange={this.props.changefun} value={this.props.message}/>
         <div className="sendButton"
              onClick={() => {this.props.send()}}>
               Send
@@ -53,7 +53,7 @@ class App extends Component {
     super(props);
     this.state = {
       socket: new WebSocket("ws://" + location.hostname + ":8080/websocket"),
-      message: "",
+      message: "Please Enter a Message",
       messages: [],
       greyBackground: false
     };
@@ -82,6 +82,7 @@ class App extends Component {
       message: this.state.message
     };
     this.state.socket.send(JSON.stringify(data));
+    this.setState({message: ""});
   }
 
   messageReceived(message) {
@@ -94,7 +95,7 @@ class App extends Component {
     return (
       <div className="App">
         <DisplayArea messages={this.state.messages}/>
-        <Input send={this.sendMessage.bind(this)} changefun={this.onMessageChange.bind(this)}/>
+        <Input message={this.state.message} send={this.sendMessage.bind(this)} changefun={this.onMessageChange.bind(this)}/>
       </div>
     );
   }
