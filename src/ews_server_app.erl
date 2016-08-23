@@ -22,7 +22,7 @@ start(_StartType, _StartArgs) ->
      {"/static/[...]", cowboy_static, {priv_dir, ews_server, "chat_client/build/static"}}
     ]}
   ]),
-  cowboy:start_http(http_listener, 100, [{port, 8080}],
+  cowboy:start_http(http_listener, 100, [{port, 8000}],
     [{env, [{dispatch, Dispatch}]}]
   ),
   ews_server_sup:start_link().

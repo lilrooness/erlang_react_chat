@@ -7,7 +7,11 @@ class Input extends Component {
     return (
       <div className="Input">
         <input type="text" className="inputBox"
-               onChange={this.props.changefun} value={this.props.message}/>
+               onChange={this.props.changefun} value={this.props.message} onKeyPress={(e) => {
+                 if(e.key == "Enter") {
+                   this.props.send()
+                 }
+               }}/>
         <div className="sendButton"
              onClick={() => {this.props.send()}}>
               Send
@@ -23,7 +27,7 @@ class Message extends Component {
       "backgroundColor": this.props.background_color
     };
     return (
-      <div className="Message" style={style}>{this.props.message}</div>
+      <div className="Message" style={style}>{"["+this.props.username+"] "+this.props.message}</div>
     );
   }
 }
@@ -38,7 +42,7 @@ class DisplayArea extends Component {
     return (
       <div className="DisplayArea">
         {this.props.messages.map((m, i) =>
-          <Message message={m}
+          <Message message={m.message} username={m.username}
             key={i}
             background_color={i%2==0 ? "grey" : "lightgrey"}/>
         )}
@@ -52,7 +56,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      socket: new WebSocket("ws://" + location.hostname + ":8080/websocket"),
+      socket: new WebSocket("ws://" + location.hostname+":"+location.port+"/websocket"),
       message: "Please Enter a Message",
       messages: [],
       greyBackground: false
@@ -63,12 +67,12 @@ class App extends Component {
 
     this.state.socket.onopen = () => {
       var username = prompt("Username", "");
-      this.state.socket.send(username);Joe
+      this.state.socket.send(username);
     }
 
     this.state.socket.onmessage = (event) => {
       var data = JSON.parse(event.data);
-      this.messageReceived(data.message);
+      this.messageReceived(data);
     };
   }
 

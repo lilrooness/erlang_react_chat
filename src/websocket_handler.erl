@@ -21,19 +21,18 @@ websocket_handle({text, Username}, Req, #state{username=undefined} = State) ->
   case chat_room:register_new_connection({Username, self()}) of
     ok ->
       {reply,
-        {text, ews_util:encode_message(Username, <<"server">>)},
+        {text, ews_util:encode_message(Username, <<"server">>, <<"SERVER">>)},
         Req, State#state{username=Username}};
     {error, name_taken} ->
       ErrMsg = <<"username in use">>,
       {reply,
-        {text, ews_util:encode_message(ErrMsg, <<"error">>)},
+        {text, ews_util:encode_message(ErrMsg, <<"error">>, <<"SERVER">>)},
         Req, State}
   end;
 
-
 websocket_handle({text, Message}, Req, State) ->
   chat_room:process_decoded_message(
-    ews_util:decode_message(Message)
+    ews_util:decode_message(Message, State#state.username)
   ),
   {ok, Req, State}.
 

@@ -29,6 +29,9 @@ init([]) ->
 % Check that no connections by NewName exist, if not then add
 % new connection to connections list. If name exists then
 % reply with "name_taken"
+handle_call({register, {<<"SERVER">>, _}}, _From, State) ->
+  {reply, {error, name_taken}, State};
+
 handle_call({register, {NewName, _Pid} = Connection}, _From,
             #state{connections=Connections} = State) ->
 
@@ -59,12 +62,12 @@ terminate(_Reason, _State) ->
 register_new_connection(Connection) ->
   gen_server:call(?MODULE, {register, Connection}).
 
-process_decoded_message({message, Message}) ->
+process_decoded_message({message, Message, Username}) ->
   gen_server:cast(?MODULE,
-    {emit, ews_util:encode_message(Message, <<"message">>)});
-process_decoded_message({command, _Message}) ->
+    {emit, ews_util:encode_message(Message, <<"message">>, Username)});
+process_decoded_message({command, _Message, _Username}) ->
   ok;
-process_decoded_message({_Type, _Message}) ->
+process_decoded_message({_Type, _Message, _Username}) ->
   ok.
 
 unregister_connection(Username) ->
