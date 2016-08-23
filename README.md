@@ -11,7 +11,7 @@ Build
 -----
 
     $ rebar3 compile
-    $ cd priv/chat_client && npm build
+    $ cd priv/chat_client && npm run build
 
 Run
 ---
